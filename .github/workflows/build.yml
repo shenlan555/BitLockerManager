@@ -1,0 +1,38 @@
+name: Build
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*' ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build (MSVC, static link, embedded admin manifest + icon)
+        shell: cmd
+        run: build_exe.bat --no-pause
+
+      - name: Verify exe
+        shell: pwsh
+        run: |
+          if (-not (Test-Path 'Build\BitLockerManager.exe')) { throw 'exe not produced' }
+          (Get-Item 'Build\BitLockerManager.exe').VersionInfo | Format-List ProductName, ProductVersion, CompanyName, LegalCopyright
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BitLockerManager-${{ github.sha }}
+          path: Build/BitLockerManager.exe
+          if-no-files-found: error
+
+      - name: Attach exe to release (on tag push)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Build/BitLockerManager.exe

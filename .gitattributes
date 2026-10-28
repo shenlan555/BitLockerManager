@@ -1,0 +1,20 @@
+# Normalize line endings
+* text=auto
+
+# Keep batch files with CRLF (required by cmd.exe)
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Source
+*.cpp text
+*.h text
+*.rc text
+*.manifest text
+*.yml text
+*.md text
+
+# Binary
+*.ico binary
+*.exe binary
+*.png binary
+*.zip binary
