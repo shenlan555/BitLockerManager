@@ -23,15 +23,10 @@ for %%P in (
   if not defined VCVARS if exist %%P set "VCVARS=%%~P"
 )
 
-if not defined VCVARS (
-  rem Fallback: ask vswhere (ships with any VS / Build Tools install)
-  set "VSWHERE=C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe"
-  if exist "!VSWHERE!" (
-    for /f "usebackq delims=" %%I in (`"%VSWHERE%" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do (
-      if exist "%%I\VC\Auxiliary\Build\vcvars64.bat" set "VCVARS=%%I\VC\Auxiliary\Build\vcvars64.bat"
-    )
-  )
-)
+rem Fallback: ask vswhere (ships with any VS / Build Tools install)
+set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+if not exist "%VSWHERE%" set "VSWHERE=%ProgramFiles%\Microsoft Visual Studio\Installer\vswhere.exe"
+if exist "%VSWHERE%" for /f "usebackq delims=" %%I in (`"%VSWHERE%" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do if exist "%%I\VC\Auxiliary\Build\vcvars64.bat" set "VCVARS=%%I\VC\Auxiliary\Build\vcvars64.bat"
 
 if not defined VCVARS (
   echo [ERROR] vcvars64.bat not found.

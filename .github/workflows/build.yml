@@ -14,9 +14,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build (MSVC, static link, embedded admin manifest + icon)
+      - name: Setup MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Build (static link, embedded admin manifest + icon)
         shell: cmd
-        run: build_exe.bat --no-pause
+        run: |
+          if not exist Build mkdir Build
+          rc /nologo /fo app.res app.rc
+          cl /nologo /W4 /O2 /MT /EHsc /utf-8 /DUNICODE /D_UNICODE /Fe:Build\BitLockerManager.exe BitLockerManager.cpp app.res /link /SUBSYSTEM:WINDOWS /MANIFEST:EMBED /MANIFESTUAC:NO /MANIFESTINPUT:app.manifest
 
       - name: Verify exe
         shell: pwsh
