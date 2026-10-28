@@ -24,3 +24,6 @@ Build/
 Thumbs.db
 Desktop.ini
 .DS_Store
+
+# Local-only notes
+BitLockerManager开发案例总结.md
